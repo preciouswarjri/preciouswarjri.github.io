@@ -7,7 +7,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
             // Establish WebSocket connection
-            const socket = new WebSocket('wss:localhost:1880/ws/data');
+            const socket = new WebSocket('wss:192.168.1.9:1880/ws/data');
 
             // Handle WebSocket errors
             socket.onerror = (error) => {
