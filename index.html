@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arduino Sensor Data</title>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            // Establish WebSocket connection
+            const socket = new WebSocket('ws://localhost:1880/ws/data');
+
+            // Handle WebSocket errors
+            socket.onerror = (error) => {
+                console.error('WebSocket Error:', error);
+                document.getElementById('temperature').innerText = 'Error connecting to WebSocket';
+                document.getElementById('humidity').innerText = 'Error connecting to WebSocket';
+            };
+
+            // Handle incoming messages
+            socket.onmessage = (event) => {
+    console.log('Received raw data:', event.data); // Log the raw data
+
+    try {
+        let data;
+        // Check if data is JSON or just text
+        if (event.data.startsWith('{')) {
+            data = JSON.parse(event.data); // Parse JSON
+        } else {
+            data = { message: event.data }; // Handle non-JSON text data
+        }
+        console.log('Parsed data:', data); // Log parsed data
+
+        // Process the data if valid
+        if (data.temperature !== undefined && data.humidity !== undefined) {
+            document.getElementById('temperature').innerText = `Temperature: ${data.temperature}°C`;
+            document.getElementById('humidity').innerText = `Humidity: ${data.humidity}%`;
+        } else {
+            console.error('Invalid data format:', data);
+            document.getElementById('temperature').innerText = 'Invalid data format';
+            document.getElementById('humidity').innerText = 'Invalid data format';
+        }
+    } catch (error) {
+        console.error('Error parsing WebSocket data:', error);
+        document.getElementById('temperature').innerText = 'Error parsing data';
+        document.getElementById('humidity').innerText = 'Error parsing data';
+    }
+};
+            // Handle WebSocket connection open
+            socket.onopen = () => {
+                console.log('WebSocket connection opened');
+            };
+
+            // Handle WebSocket connection close
+            socket.onclose = () => {
+                console.log('WebSocket connection closed');
+                document.getElementById('temperature').innerText = 'WebSocket connection closed';
+                document.getElementById('humidity').innerText = 'WebSocket connection closed';
+            };
+        });
+    </script>
+</head>
+<body>
+    <h1>Sensor Readings</h1>
+    <p id="temperature">Loading...</p>
+    <p id="humidity">Loading...</p>
+</body>
+</html>
+
