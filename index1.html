@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Feed</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #000;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <img id="liveFeed" src="" alt="Live Feed">
+    <script>
+        // Create a WebSocket connection
+        const socket = new WebSocket('wss:/127.0.0.1:8080/data');
+
+        // Get the image element
+        const img = document.getElementById('liveFeed');
+
+        // When a message is received from the server
+        socket.addEventListener('message', function(event) {
+            // Update the image source with the received data
+            img.src = 'data:image/jpeg;base64,' + event.data;
+        });
+
+        // Handle WebSocket errors
+        socket.addEventListener('error', function(error) {
+            console.error('WebSocket error:', error);
+        });
+
+        // Handle WebSocket connection closure
+        socket.addEventListener('close', function() {
+            console.log('WebSocket connection closed');
+        });
+    </script>
+</body>
+</html>
